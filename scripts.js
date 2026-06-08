@@ -2,9 +2,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Smooth scrolling
   document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
+    anchor.addEventListener('click', e => {
       e.preventDefault();
-      document.querySelector(this.getAttribute('href')).scrollIntoView({
+      document.querySelector(anchor.getAttribute('href')).scrollIntoView({
         behavior: 'smooth'
       });
     });
@@ -12,41 +12,47 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Sticky nav
   window.addEventListener('scroll', () => {
-    const nav = document.querySelector('nav');
-    nav.classList.toggle('sticky', window.scrollY > 100);
+    document.querySelector('nav').classList.toggle('sticky', window.scrollY > 100);
   });
 
-  // --- FIXED AUTO-DETECT NEXT STREAM TIME ---
+  // Cached DOM references (faster)
+  const timerEl = document.getElementById("timer");
+  const liveEl = document.getElementById("live-indicator");
+  const offlineEl = document.getElementById("offline-indicator");
+  const daysEl = document.getElementById("days");
+  const hoursEl = document.getElementById("hours");
+  const minutesEl = document.getElementById("minutes");
+  const secondsEl = document.getElementById("seconds");
+
+  // Streaming schedule
+  const schedule = {
+    0: { start: 12, end: 14 }, // Sunday
+    1: { start: 12, end: 16 }, // Monday
+    2: { start: 12, end: 16 }, // Tuesday
+    3: { start: 12, end: 16 }, // Wednesday
+    4: { start: 12, end: 16 }, // Thursday
+    5: { start: 12, end: 16 }, // Friday
+    6: { start: 12, end: 16 }  // Saturday
+  };
+
   function getNextStreamDate() {
     const now = new Date();
-
-    // Streaming schedule (0 = Sunday)
-    const schedule = {
-      0: { start: 12, end: 14 }, // Sunday
-      1: { start: 12, end: 16 }, // Monday
-      2: { start: 12, end: 16 }, // Tuesday
-      3: { start: 12, end: 16 }, // Wednesday
-      4: { start: 12, end: 16 }, // Thursday
-      5: { start: 12, end: 16 }, // Friday
-      6: { start: 12, end: 16 }  // Saturday
-    };
-
     const today = now.getDay();
     const hour = now.getHours();
 
-    // 1. If stream is later today
+    // 1. Stream later today
     if (hour < schedule[today].start) {
-      const next = new Date();
+      const next = new Date(now);
       next.setHours(schedule[today].start, 0, 0, 0);
       return next;
     }
 
-    // 2. If stream is live right now
+    // 2. Stream is live
     if (hour >= schedule[today].start && hour < schedule[today].end) {
       return "LIVE";
     }
 
-    // 3. Otherwise find the next valid stream day
+    // 3. Find next valid stream day
     for (let i = 1; i <= 7; i++) {
       const nextDay = (today + i) % 7;
       const next = new Date(now);
@@ -56,45 +62,51 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  function showLive() {
+    timerEl.textContent = "🎮 Stream is LIVE!";
+    liveEl.classList.remove("hidden");
+    offlineEl.classList.add("hidden");
+  }
+
+  function showOffline() {
+    liveEl.classList.add("hidden");
+    offlineEl.classList.remove("hidden");
+  }
+
   function startCountdown() {
     const nextStream = getNextStreamDate();
 
-    // LIVE MODE
     if (nextStream === "LIVE") {
-      document.getElementById("timer").textContent = "🎮 Stream is LIVE!";
-      document.getElementById("live-indicator").classList.remove("hidden");
+      showLive();
       return;
     }
 
-    const countDownDate = nextStream.getTime();
+    showOffline();
 
-    const timer = setInterval(function () {
-      const now = new Date().getTime();
-      const distance = countDownDate - now;
+    const target = nextStream.getTime();
 
-      // When countdown hits zero → LIVE
+    setInterval(() => {
+      const now = Date.now();
+      const distance = target - now;
+
       if (distance <= 0) {
-        clearInterval(timer);
-        document.getElementById("timer").textContent = "🎮 Stream is LIVE!";
-        document.getElementById("live-indicator").classList.remove("hidden");
+        showLive();
         return;
       }
 
-      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+      const days = Math.floor(distance / 86400000);
+      const hours = Math.floor((distance % 86400000) / 3600000);
+      const minutes = Math.floor((distance % 3600000) / 60000);
+      const seconds = Math.floor((distance % 60000) / 1000);
 
-      document.getElementById("days").textContent = days.toString().padStart(2, '0');
-      document.getElementById("hours").textContent = hours.toString().padStart(2, '0');
-      document.getElementById("minutes").textContent = minutes.toString().padStart(2, '0');
-      document.getElementById("seconds").textContent = seconds.toString().padStart(2, '0');
+      daysEl.textContent = String(days).padStart(2, "0");
+      hoursEl.textContent = String(hours).padStart(2, "0");
+      minutesEl.textContent = String(minutes).padStart(2, "0");
+      secondsEl.textContent = String(seconds).padStart(2, "0");
     }, 1000);
   }
 
   startCountdown();
 
-  // Flash animation
   document.getElementById("countdown").classList.add("flash");
-
 });
