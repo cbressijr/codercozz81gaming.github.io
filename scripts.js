@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
     nav.classList.toggle('sticky', window.scrollY > 100);
   });
 
-  // --- AUTO-DETECT NEXT STREAM TIME ---
+  // --- FIXED AUTO-DETECT NEXT STREAM TIME ---
   function getNextStreamDate() {
     const now = new Date();
 
@@ -31,25 +31,25 @@ document.addEventListener("DOMContentLoaded", () => {
       6: { start: 12, end: 16 }  // Saturday
     };
 
-    let day = now.getDay();
-    let hour = now.getHours();
+    const today = now.getDay();
+    const hour = now.getHours();
 
-    // Check if stream is later today
-    if (hour < schedule[day].start) {
+    // 1. If stream is later today
+    if (hour < schedule[today].start) {
       const next = new Date();
-      next.setHours(schedule[day].start, 0, 0, 0);
+      next.setHours(schedule[today].start, 0, 0, 0);
       return next;
     }
 
-    // If stream is currently live
-    if (hour >= schedule[day].start && hour < schedule[day].end) {
+    // 2. If stream is live right now
+    if (hour >= schedule[today].start && hour < schedule[today].end) {
       return "LIVE";
     }
 
-    // Otherwise, find the next day with a stream
+    // 3. Otherwise find the next valid stream day
     for (let i = 1; i <= 7; i++) {
-      const nextDay = (day + i) % 7;
-      const next = new Date();
+      const nextDay = (today + i) % 7;
+      const next = new Date(now);
       next.setDate(now.getDate() + i);
       next.setHours(schedule[nextDay].start, 0, 0, 0);
       return next;
@@ -59,12 +59,12 @@ document.addEventListener("DOMContentLoaded", () => {
   function startCountdown() {
     const nextStream = getNextStreamDate();
 
+    // LIVE MODE
     if (nextStream === "LIVE") {
-  document.getElementById("timer").textContent = "🎮 Stream is LIVE!";
-  document.getElementById("live-indicator").classList.remove("hidden");
-  return;
-}
-
+      document.getElementById("timer").textContent = "🎮 Stream is LIVE!";
+      document.getElementById("live-indicator").classList.remove("hidden");
+      return;
+    }
 
     const countDownDate = nextStream.getTime();
 
@@ -72,13 +72,13 @@ document.addEventListener("DOMContentLoaded", () => {
       const now = new Date().getTime();
       const distance = countDownDate - now;
 
+      // When countdown hits zero → LIVE
       if (distance <= 0) {
-  clearInterval(timer);
-  document.getElementById("timer").textContent = "🎮 Stream is LIVE!";
-  document.getElementById("live-indicator").classList.remove("hidden");
-  return;
-}
-
+        clearInterval(timer);
+        document.getElementById("timer").textContent = "🎮 Stream is LIVE!";
+        document.getElementById("live-indicator").classList.remove("hidden");
+        return;
+      }
 
       const days = Math.floor(distance / (1000 * 60 * 60 * 24));
       const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
