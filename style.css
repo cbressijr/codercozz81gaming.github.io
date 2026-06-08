@@ -1,104 +1,101 @@
+/* ------------------------------
+   GLOBAL RESET & BASE STYLES
+--------------------------------*/
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 body {
-  font-family: 'Segoe UI', sans-serif;
-  margin: 0;
-  background-color: #121212;
-  color: #f0f0f0;
-}
-
-header {
-  background-color: #9146FF;
-  padding: 1rem;
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: #111;
+  color: #fff;
+  line-height: 1.6;
   text-align: center;
+  padding-bottom: 50px;
 }
 
-header h1 {
-  margin: 0;
-  font-size: 2rem;
+h1, h2 {
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+
+/* ------------------------------
+   HEADER & NAVIGATION
+--------------------------------*/
+header {
+  padding: 20px;
+  background: #222;
+  border-bottom: 2px solid #444;
+}
+
+nav {
+  margin-top: 15px;
 }
 
 nav a {
-  margin: 0 1rem;
-  color: white;
+  margin: 0 15px;
+  color: #fff;
   text-decoration: none;
+  font-weight: bold;
+  transition: 0.3s;
 }
 
-section {
-  padding: 2rem;
-  border-bottom: 1px solid #333;
-}
-
-iframe {
-  max-width: 100%;
-  border: none;
-}
-
-footer {
-  text-align: center;
-  padding: 1rem;
-  background-color: #222;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto;
-  height: auto;
-  width: auto;
+nav a:hover {
+  color: #8ab4f8;
 }
 
 nav.sticky {
   position: fixed;
   top: 0;
   width: 100%;
-  background-color: #9146FF;
-  z-index: 1000;
+  background: #000;
+  padding: 10px 0;
+  z-index: 999;
+  border-bottom: 2px solid #444;
 }
 
+/* ------------------------------
+   COUNTDOWN SECTION
+--------------------------------*/
 #countdown {
-  text-align: center;
-  padding: 2rem;
-  background-color: #1e1e1e;
-  color: #f0f0f0;
+  margin-top: 20px;
+  padding: 20px;
 }
 
 #timer {
   font-size: 2rem;
+  margin-top: 10px;
   font-weight: bold;
-  letter-spacing: 2px;
-  margin-top: 1rem;
 }
 
-@keyframes flash {
-  0% { background-color: #1e1e1e; }
-  50% { background-color: #9146FF; }
-  100% { background-color: #1e1e1e; }
-}
-
-#countdown.flash {
+/* Flash animation */
+.flash {
   animation: flash 1s ease-in-out;
 }
 
-#countdown {
-  text-align: center;
-  padding: 2rem;
-  background-color: #1e1e1e;
-  color: #f0f0f0;
+@keyframes flash {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-#timer {
-  font-size: 2rem;
+/* ------------------------------
+   LIVE & OFFLINE INDICATORS
+--------------------------------*/
+#live-indicator,
+#offline-indicator {
+  margin-top: 10px;
+  font-size: 1.2rem;
   font-weight: bold;
-  letter-spacing: 2px;
-  margin-top: 1rem;
 }
 
 #live-indicator {
+  color: #ff3b3b;
   display: flex;
+  justify-content: center;
   align-items: center;
   gap: 8px;
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: #ff3b3b;
-  margin-bottom: 10px;
 }
 
 .pulse-dot {
@@ -115,6 +112,54 @@ nav.sticky {
   100% { transform: scale(1); opacity: 1; }
 }
 
+.offline-text {
+  color: #aaa;
+}
+
 .hidden {
   display: none;
+}
+
+/* ------------------------------
+   LOGO
+--------------------------------*/
+.logo {
+  width: 200px;
+  margin: 20px auto;
+  display: block;
+}
+
+/* ------------------------------
+   SECTIONS
+--------------------------------*/
+section {
+  padding: 40px 20px;
+  border-bottom: 1px solid #333;
+}
+
+section h2 {
+  margin-bottom: 15px;
+}
+
+section p {
+  max-width: 800px;
+  margin: 10px auto;
+  font-size: 1.1rem;
+}
+
+/* ------------------------------
+   SUPPORT SECTION
+--------------------------------*/
+#support img {
+  margin-top: 10px;
+}
+
+/* ------------------------------
+   FOOTER
+--------------------------------*/
+footer {
+  margin-top: 40px;
+  padding: 20px;
+  background: #222;
+  border-top: 2px solid #444;
 }
