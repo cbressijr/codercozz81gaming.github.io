@@ -54,8 +54,8 @@ function getNextStreamDate() {
   }
 
   // 2. Stream is live
-  if (hour >= schedule[today].start && hour < schedule[today].end) {
-    return "LIVE";
+  // if (hour >= schedule[today].start && hour < schedule[today].end) {
+  //  return "LIVE";
   }
 
   // 3. Find next valid stream day
