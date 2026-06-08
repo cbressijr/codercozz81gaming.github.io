@@ -60,9 +60,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const nextStream = getNextStreamDate();
 
     if (nextStream === "LIVE") {
-      document.getElementById("timer").textContent = "🎮 Stream is LIVE!";
-      return;
-    }
+  document.getElementById("timer").textContent = "🎮 Stream is LIVE!";
+  document.getElementById("live-indicator").classList.remove("hidden");
+  return;
+}
+
 
     const countDownDate = nextStream.getTime();
 
@@ -71,10 +73,12 @@ document.addEventListener("DOMContentLoaded", () => {
       const distance = countDownDate - now;
 
       if (distance <= 0) {
-        clearInterval(timer);
-        document.getElementById("timer").textContent = "🎮 Stream is LIVE!";
-        return;
-      }
+  clearInterval(timer);
+  document.getElementById("timer").textContent = "🎮 Stream is LIVE!";
+  document.getElementById("live-indicator").classList.remove("hidden");
+  return;
+}
+
 
       const days = Math.floor(distance / (1000 * 60 * 60 * 24));
       const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
