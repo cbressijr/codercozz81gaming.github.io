@@ -35,37 +35,42 @@ document.addEventListener("DOMContentLoaded", () => {
     6: { start: 12, end: 16 }  // Saturday
   };
 
-  // FIXED: Proper next-stream detection
-  function getNextStreamDate() {
-    const now = new Date();
-    const today = now.getDay();
-    const hour = now.getHours();
+function getNextStreamDate() {
+  const now = new Date();
 
-    // 1. Stream later today
-    if (hour < schedule[today].start) {
-      const next = new Date(now);
-      next.setHours(schedule[today].start, 0, 0, 0);
+  // Convert to EST/EDT local time
+  const local = new Date(
+    now.toLocaleString("en-US", { timeZone: "America/New_York" })
+  );
+
+  const today = local.getDay();
+  const hour = local.getHours();
+
+  // 1. Stream later today
+  if (hour < schedule[today].start) {
+    const next = new Date(local);
+    next.setHours(schedule[today].start, 0, 0, 0);
+    return next;
+  }
+
+  // 2. Stream is live
+  if (hour >= schedule[today].start && hour < schedule[today].end) {
+    return "LIVE";
+  }
+
+  // 3. Find next valid stream day
+  for (let i = 1; i <= 7; i++) {
+    const nextDay = (today + i) % 7;
+    const next = new Date(local);
+    next.setDate(local.getDate() + i);
+    next.setHours(schedule[nextDay].start, 0, 0, 0);
+
+    if (next.getTime() > local.getTime()) {
       return next;
     }
-
-    // 2. Stream is live
-    if (hour >= schedule[today].start && hour < schedule[today].end) {
-      return "LIVE";
-    }
-
-    // 3. Find next valid stream day (corrected loop)
-    for (let i = 1; i <= 7; i++) {
-      const nextDay = (today + i) % 7;
-      const next = new Date(now);
-      next.setDate(now.getDate() + i);
-      next.setHours(schedule[nextDay].start, 0, 0, 0);
-
-      // Only return if the date is in the future
-      if (next.getTime() > now.getTime()) {
-        return next;
-      }
-    }
   }
+}
+
 
   function showLive() {
     timerEl.textContent = "🎮 Stream is LIVE!";
